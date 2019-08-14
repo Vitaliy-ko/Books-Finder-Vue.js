@@ -1,19 +1,16 @@
 <template>
   <div>
     <button
-      ref="addToCardModal"
       data-toggle="modal"
-      data-target="#addToCart"
+      :data-target="'#addToCart'+bookIndex"
       class="btn btn-primary"
       type="button"
+      @click="pros"
     >Заказать</button>
 
     <div
       class="modal fade"
-      id="addToCart"
-      role="dialog"
-      aria-hidden="true"
-      tabindex="-1"
+      :id="'addToCart'+bookIndex"
     >
       <div
         class="modal-dialog"
@@ -138,9 +135,10 @@ import {
 
 export default {
   comments: [TheMask],
-  props: ["book"],
+  props: ["bookIndex"],
   data() {
     return {
+       book: this.$store.getters.booksData[this.bookIndex],
       inputData: {
         name: "",
         email: "",
@@ -148,6 +146,11 @@ export default {
       }
     };
   },
+//   watch: {
+//      bookIndex () {
+//         this.book = this.$store.getters.booksData[this.bookIndex]
+//      }
+//   },
   validations: {
     inputData: {
       name: {
@@ -165,13 +168,25 @@ export default {
       }
     }
   },
-  created() {
-    eventEmitter.$on("toggleModal", bookData => {
-      this.book = bookData;
-      this.addToCart.modal("toggle");
-    });
+  watch: {
+     bookIndex: function() {
+        return this.book = this.$store.getters.booksData[this.bookIndex];
+     }
   },
+//   computed: {
+//     book() {
+//       return this.$store.getters.booksData[this.bookIndex];
+//     }
+//   },
   methods: {
+     pros () {
+        console.log(this.bookIndex);
+        console.log(this.book.volumeInfo.title);
+        this.book = this.$store.getters.booksData[this.bookIndex];
+     },
+    //  getCurrentBook() {
+    //     eventEmitter.$emit('getCureentBook')
+    //  },
     validationRun(input) {
       this.$v[input].$touch();
     },
@@ -182,12 +197,6 @@ export default {
       if (!this.$v.$error) {
       }
     }
-  },
-  itemClicked: function(item) {
-    $("#addToCart").modal("show");
   }
 };
 </script>
-
-<style lang="scss" scoped>
-</style>

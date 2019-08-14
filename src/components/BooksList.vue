@@ -3,7 +3,7 @@
     <ul class="list-unstyled">
       <li
         class="media"
-        v-for="book in books"
+        v-for="(book, bookIndex) in books"
         :key="book.id"
       >
         <img
@@ -21,7 +21,7 @@
               :key="index"
             >{{author}}</span>
           </div>
-          <add-to-cart :book="book"></add-to-cart>
+          <add-to-cart :bookIndex="bookIndex"></add-to-cart>
         </div>
       </li>
     </ul>
