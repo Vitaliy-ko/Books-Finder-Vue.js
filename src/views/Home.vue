@@ -13,7 +13,7 @@ export default {
   name: 'home',
   components: {
     findBooks,
-    booksList
-  }
+    booksList,
+  },
 }
 </script>

@@ -1,0 +1,12 @@
+$border-color-primary: #ffc107;
+
+.listItem {
+   border: 2px solid $border-color-primary;
+   border-radius: 0.4rem;
+   position: relative;
+   padding: 0.75rem;
+   &:hover {
+     border-width: 4px;
+     padding: calc(0.75rem - 2px);
+   }
+ }

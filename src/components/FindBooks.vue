@@ -1,58 +1,37 @@
 <template>
   <div>
     <form
-      class="form-inline"
+      class="form-row d-flex justify-content-center mb-5"
       @submit.prevent="getBooksData"
     >
-      <div class="form-group mx-sm-3 mb-2">
+      <div class="form-row col-6 mb-2 px-3">
         <input
-          class="form-control mr-2"
+          class="form-control col-8 text-center"
           type="text"
           placeholder="Название книги"
           autofocus
-          v-model="$v.booksName.$model"
-          :class="{'is-invalid': $v.booksName.$error}"
+          v-model="booksName"
         />
         <button
-          class="btn btn-primary"
+          class="btn btn-dark col-3 ml-auto"
           type="submit"
-          :disabled="$v.booksName.$invalid"
         >Найти</button>
-        <div
-          class="invalid-feedback"
-          v-if="!$v.booksName.required"
-        >Поле обязательно для заполнения</div>
-        <div
-          class="invalid-feedback"
-          v-if="!$v.booksName.minLength"
-        >Имя должно состоять как минимум из {{$v.booksName.$params.minLength.min}} букв</div>
       </div>
     </form>
   </div>
 </template>
 
 <script>
-import { required, minLength } from "vuelidate/lib/validators";
-
 export default {
   data() {
     return {
-      booksName: ""
+      booksName: "node"
     };
   },
   methods: {
     getBooksData() {
       this.$store.dispatch("getBooksData", this.booksName);
     }
-  },
-  validations: {
-    booksName: {
-      minLength: minLength(2),
-      required
-    }
   }
 };
 </script>
-
-<style lang="scss" scoped>
-</style>

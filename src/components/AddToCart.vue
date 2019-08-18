@@ -3,14 +3,21 @@
     <button
       data-toggle="modal"
       :data-target="'#addToCart'+bookIndex"
-      class="btn btn-primary"
+      class="btn btn-dark btn--large"
       type="button"
-      @click="pros"
+      v-if="book.saleInfo.isEbook"
     >Заказать</button>
+    <p
+      v-else
+      class="d-flex align-items-center alert alert-danger alert--large mb-0"
+    >
+      <span>Нет в наличии</span>
+    </p>
 
     <div
       class="modal fade"
       :id="'addToCart'+bookIndex"
+      ref="addToCartModal"
     >
       <div
         class="modal-dialog"
@@ -53,6 +60,10 @@
                   v-model.trim="inputData.name"
                   :class="{'is-invalid': $v.inputData.name.$error, 'is-valid': !$v.inputData.name.$invalid}"
                 />
+                <div
+                  class="invalid-feedback"
+                  v-if="!$v.inputData.name.alpha"
+                >Введены не допустимые символы</div>
                 <div
                   class="invalid-feedback"
                   v-if="!$v.inputData.name.required"
@@ -110,7 +121,7 @@
           </div>
           <div class="modal-footer">
             <button
-              class="btn btn-primary"
+              class="btn btn-dark"
               type="button"
               @click="addToCard"
             >Отправить</button>
@@ -123,8 +134,8 @@
 
 <script>
 import { TheMask } from "vue-the-mask";
-import { eventEmitter } from "./../main";
-
+import { helpers } from 'vuelidate/lib/validators'
+import JQuery from "jquery";
 import {
   required,
   minLength,
@@ -138,7 +149,6 @@ export default {
   props: ["bookIndex"],
   data() {
     return {
-       book: this.$store.getters.booksData[this.bookIndex],
       inputData: {
         name: "",
         email: "",
@@ -146,16 +156,12 @@ export default {
       }
     };
   },
-//   watch: {
-//      bookIndex () {
-//         this.book = this.$store.getters.booksData[this.bookIndex]
-//      }
-//   },
   validations: {
     inputData: {
       name: {
         minLength: minLength(2),
-        required
+        alpha: helpers.regex('alpha', /^[a-zA-Zа-яёА-ЯЁ -]*$/),
+        required,
       },
       email: {
         email,
@@ -168,35 +174,40 @@ export default {
       }
     }
   },
-  watch: {
-     bookIndex: function() {
-        return this.book = this.$store.getters.booksData[this.bookIndex];
-     }
+  computed: {
+    book() {
+      return this.$store.getters.booksData[this.bookIndex];
+    }
   },
-//   computed: {
-//     book() {
-//       return this.$store.getters.booksData[this.bookIndex];
-//     }
-//   },
   methods: {
-     pros () {
-        console.log(this.bookIndex);
-        console.log(this.book.volumeInfo.title);
-        this.book = this.$store.getters.booksData[this.bookIndex];
-     },
-    //  getCurrentBook() {
-    //     eventEmitter.$emit('getCureentBook')
-    //  },
     validationRun(input) {
-      this.$v[input].$touch();
+      this.$v.inputData[input].$touch();
     },
     addToCard() {
-      for (let input in this.$data) {
+      for (let input in this.$data.inputData) {
         this.validationRun(input);
       }
-      if (!this.$v.$error) {
+      if (!this.$v.inputData.$error) {
+        let bookOrder = {
+          customerInfo: this.inputData,
+          book: this.book,
+          bookAmount: this.book.saleInfo.retailPrice.amount
+        };
+        this.$store.dispatch("addBookToCard", bookOrder);
+        this.closeModalWindow();
       }
+    },
+    closeModalWindow() {
+      JQuery("#addToCart" + this.bookIndex).modal("hide");
     }
   }
 };
 </script>
+<style lang="scss" scoped>
+.btn--large,
+.alert--large {
+  display: block;
+  min-width: 145px;
+  min-height: 145px;
+}
+</style>

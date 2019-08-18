@@ -1,5 +1,16 @@
 <template>
   <div>
-    <h1>This is an cart page</h1>
+    <cart-list></cart-list>
   </div>
 </template>
+
+<script>
+import cartList from "./../components/CartList";
+
+export default {
+  name: "home",
+  components: {
+    cartList
+  }
+};
+</script>
